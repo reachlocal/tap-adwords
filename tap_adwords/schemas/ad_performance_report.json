@@ -1,0 +1,74 @@
+{
+    "type": [
+        "object"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "AdGroupId": {
+            "type": "number"
+        },
+        "AdGroupName": {
+            "type": "string"
+        },
+        "AverageCpc": {
+            "type": "number"
+        },
+        "AveragePosition": {
+            "type": "string"
+        },
+        "CampaignId": {
+            "type": "number"
+        },
+        "CampaignName": {
+            "type": "string"
+        },
+        "CampaignStatus": {
+            "type": "string"
+        },
+        "Clicks": {
+            "type": "number"
+        },
+        "Cost": {
+            "type": "number"
+        },
+        "CriterionId": {
+            "type": "number"
+        },
+        "Ctr": {
+            "type": "string"
+        },
+        "Date": {
+            "type": "string"
+        },
+        "Id": {
+            "type": "number"
+        },
+        "Impressions": {
+            "type": "number"
+        },
+        "IsNegative": {
+            "type": "string"
+        },
+        "Status": {
+            "type": "string"
+        },
+        "CreativeFinalUrls": {
+            "type": "string"
+        },
+        "CreativeDestinationUrl": {
+            "type": "string"
+        },
+        "CreativeTrackingUrlTemplate": {
+            "type": "string"
+        },
+        "CreativeUrlCustomParameters": {
+            "type": "string"
+        },
+        "AbsoluteTopImpressionPercentage": {
+            "type": "number"
+        },
+        "TopImpressionPercentage": {
+            "type": "number"
+        }
+    }
+}
