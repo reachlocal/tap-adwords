@@ -86,7 +86,7 @@ def get_report(stream, config, schema):
     ]
     headers = {
         'developerToken': config["developerToken"],
-        'Authorization': f'Bearer {config["accessToken"]}',
+        'Authorization': f'Bearer {get_token(config)}',
         'clientCustomerId': config["customerId"],
         'skipReportHeader': "true",
         'skipReportSummary': "true",
@@ -104,6 +104,17 @@ def get_report(stream, config, schema):
         result.append(obj)
 
     return result
+
+def get_token(config):
+    token_url = "https://www.googleapis.com/oauth2/v4/token"
+    payload = f'grant_type=refresh_token&refresh_token={config["refreshToken"]}'
+    token_headers = {
+    'Authorization': f'Basic {config["auth"]}',
+    'Content-Type': 'application/x-www-form-urlencoded'
+    }
+
+    response = requests.request("POST", token_url, headers=token_headers, data=payload)
+    return response.json()["access_token"]
 
 
 @utils.handle_top_exception(LOGGER)
