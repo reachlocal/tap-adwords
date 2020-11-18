@@ -1,0 +1,39 @@
+{
+    "type": [
+        "object"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "AdvertiserId": {
+            "type": "number"
+        },
+        "CampaignId": {
+            "type": "number"
+        },
+        "CampaignName": {
+            "type": "string"
+        },
+        "Date": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "PlaceholderType": {
+            "type": "string"
+        },
+        "Clicks": {
+            "type": "number"
+        },
+        "Cost": {
+            "type": "number"
+        },
+        "AveragePosition": {
+            "type": "string"
+        },
+        "Impressions": {
+            "type": "number"
+        },
+        "FeedItemId": {
+            "type": "number"
+        }
+    }
+}

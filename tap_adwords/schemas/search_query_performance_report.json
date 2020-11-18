@@ -1,0 +1,63 @@
+{
+    "type": [
+        "object"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "AdvertiserId": {
+            "type": "number"
+        },
+        "CampaignId": {
+            "type": "number"
+        },
+        "CampaignName": {
+            "type": "string"
+        },
+        "CampaignStatus": {
+            "type": "string"
+        },
+        "AdGroupId": {
+            "type": "number"
+        },
+        "AdGroupName": {
+            "type": "string"
+        },
+        "Date": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "KeywordId": {
+            "type": "number"
+        },
+        "Query": {
+            "type": "string"
+        },
+        "KeywordTextMatchingQuery": {
+            "type": "string"
+        },
+        "QueryMatchTypeWithVariant": {
+            "type": "string"
+        },
+        "Clicks": {
+            "type": "number"
+        },
+        "Cost": {
+            "type": "number"
+        },
+        "Impressions": {
+            "type": "number"
+        },
+        "AverageCpc": {
+            "type": "string"
+        },
+        "AveragePosition": {
+            "type": "string"
+        },
+        "AbsoluteTopImpressionPercentage": {
+            "type": "number"
+        },
+        "TopImpressionPercentage": {
+            "type": "number"
+        }
+    }
+}

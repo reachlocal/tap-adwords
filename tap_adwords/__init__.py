@@ -76,15 +76,19 @@ def sync(config, state, catalog):
 
 def get_report(stream, config, schema):
     if (stream == "STATS_BY_DEVICE_AND_NETWORK_REPORT" or stream == "STATS_BY_DEVICE_HOURLY_REPORT" or stream == "STATS_WITH_SEARCH_IMPRESSIONS_REPORT" or
-            stream == "STATS_IMPRESSIONS_REPORT"):
+            stream == "STATS_IMPRESSIONS_REPORT" or stream == "VIDEO_CAMPAIGN_PERFORMANCE_REPORT"):
         stream = "CAMPAIGN_PERFORMANCE_REPORT"
 
     fields = list(schema["properties"].keys())[1:]
     props = [(k, v) for k, v in schema["properties"].items()][1:]
     url = "https://adwords.google.com/api/adwords/reportdownload/v201809"
 
+    predicate = ""
+    if stream == "PLACEHOLDER_FEED_ITEM_REPORT":
+        predicate = "WHERE PlaceholderType IN [2, 17, 7, 24, 1, 35, 31] AND Impressions != 0"
+
     payload={
-        '__rdquery': f'SELECT {", ".join(fields)} FROM {stream} DURING LAST_30_DAYS',
+        '__rdquery': f'SELECT {", ".join(fields)} FROM {stream} {predicate} DURING LAST_30_DAYS',
         '__fmt': 'CSV'}
     files=[
 

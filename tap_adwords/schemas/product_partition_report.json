@@ -1,0 +1,42 @@
+{
+    "type": [
+        "object"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "AdvertiserId": {
+            "type": "number"
+        },
+        "Date": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "CampaignId": {
+            "type": "number"
+        },
+        "CpcBid": {
+            "type": "string"
+        },
+        "Impressions": {
+            "type": "number"
+        },
+        "Clicks": {
+            "type": "number"
+        },
+        "Cost": {
+            "type": "number"
+        },
+        "Conversions": {
+            "type": "number"
+        },
+        "CrossDeviceConversions": {
+            "type": "string"
+        },
+        "ConversionValue": {
+            "type": "number"
+        },
+        "Device": {
+            "type": "string"
+        }
+    }
+}
