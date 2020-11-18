@@ -1,0 +1,39 @@
+{
+    "type": [
+        "object"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "AdvertiserId": {
+            "type": "number"
+        },
+        "CampaignId": {
+            "type": "number"
+        },
+        "CampaignName": {
+            "type": "string"
+        },
+        "CampaignStatus": {
+            "type": "string"
+        },
+        "Date": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "HourOfDay": {
+            "type": "number"
+        },
+        "Device": {
+            "type": "string"
+        },
+        "Clicks": {
+            "type": "number"
+        },
+        "Cost": {
+            "type": "number"
+        },
+        "Impressions": {
+            "type": "number"
+        }
+    }
+}

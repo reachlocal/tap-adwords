@@ -75,7 +75,12 @@ def sync(config, state, catalog):
     return
 
 def get_report(stream, config, schema):
-    fields = list(schema["properties"].keys())
+    if (stream == "STATS_BY_DEVICE_AND_NETWORK_REPORT" or stream == "STATS_BY_DEVICE_HOURLY_REPORT" or stream == "STATS_WITH_SEARCH_IMPRESSIONS_REPORT" or
+            stream == "STATS_IMPRESSIONS_REPORT"):
+        stream = "CAMPAIGN_PERFORMANCE_REPORT"
+
+    fields = list(schema["properties"].keys())[1:]
+    props = [(k, v) for k, v in schema["properties"].items()][1:]
     url = "https://adwords.google.com/api/adwords/reportdownload/v201809"
 
     payload={
@@ -98,9 +103,14 @@ def get_report(stream, config, schema):
     result = []
     for line in lines:
         items = line.split(',')
-        obj = {}
+        obj = {
+            "AdvertiserId": int(config["customerId"])
+        }
         for index in range(len(items)):
-            obj[fields[index]] = items[index]
+            value = items[index]
+            if props[index][1]["type"] == "number":
+                value = float(value) if "." in value else int(value)
+            obj[props[index][0]] = value
         result.append(obj)
 
     return result

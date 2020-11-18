@@ -1,0 +1,51 @@
+{
+    "type": [
+        "object"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "AdvertiserId": {
+            "type": "number"
+        },
+        "AverageCpc": {
+            "type": "number"
+        },
+        "AveragePosition": {
+            "type": "string"
+        },
+        "CampaignId": {
+            "type": "number"
+        },
+        "CampaignName": {
+            "type": "string"
+        },
+        "CampaignStatus": {
+            "type": "string"
+        },
+        "Clicks": {
+            "type": "number"
+        },
+        "VideoViews": {
+            "type": "number"
+        },
+        "Cost": {
+            "type": "number"
+        },
+        "Ctr": {
+            "type": "string"
+        },
+        "Date": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "Impressions": {
+            "type": "number"
+        },
+        "AbsoluteTopImpressionPercentage": {
+            "type": "number"
+        },
+        "TopImpressionPercentage": {
+            "type": "number"
+        }
+    }
+}

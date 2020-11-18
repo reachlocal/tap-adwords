@@ -1,0 +1,96 @@
+{
+    "type": [
+        "object"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "AdvertiserId": {
+            "type": "number"
+        },
+        "AdGroupId": {
+            "type": "number"
+        },
+        "AdGroupName": {
+            "type": "string"
+        },
+        "AverageCpc": {
+            "type": "number"
+        },
+        "AveragePosition": {
+            "type": "string"
+        },
+        "CampaignId": {
+            "type": "number"
+        },
+        "CampaignName": {
+            "type": "string"
+        },
+        "CampaignStatus": {
+            "type": "string"
+        },
+        "Clicks": {
+            "type": "number"
+        },
+        "Cost": {
+            "type": "number"
+        },
+        "CpcBid": {
+            "type": "string"
+        },
+        "CpcBidSource": {
+            "type": "string"
+        },
+        "Criteria": {
+            "type": "string"
+        },
+        "Ctr": {
+            "type": "string"
+        },
+        "Date": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "FirstPageCpc": {
+            "type": "number"
+        },
+        "Id": {
+            "type": "number"
+        },
+        "Impressions": {
+            "type": "number"
+        },
+        "IsNegative": {
+            "type": "string"
+        },
+        "KeywordMatchType": {
+            "type": "string"
+        },
+        "QualityScore": {
+            "type": "string"
+        },
+        "Status": {
+            "type": "string"
+        },
+        "TopOfPageCpc": {
+            "type": "number"
+        },
+        "FinalUrls": {
+            "type": "string"
+        },
+        "CriteriaDestinationUrl": {
+            "type": "string"
+        },
+        "TrackingUrlTemplate": {
+            "type": "string"
+        },
+        "UrlCustomParameters": {
+            "type": "string"
+        },
+        "AbsoluteTopImpressionPercentage": {
+            "type": "number"
+        },
+        "TopImpressionPercentage": {
+            "type": "number"
+        }
+    }
+}
