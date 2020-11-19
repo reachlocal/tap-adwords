@@ -7,6 +7,7 @@ from singer.catalog import Catalog, CatalogEntry
 from singer.schema import Schema
 import requests
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
 
 
 REQUIRED_CONFIG_KEYS = []
@@ -67,69 +68,84 @@ def sync(config, state, catalog):
             key_properties=stream.key_properties,
         )
 
-        data = get_report(stream.tap_stream_id, config, schema)
-
-        for row in data:
-            singer.write_records(stream.tap_stream_id, [row])
+        get_report(stream.tap_stream_id, config, schema)
         singer.write_state({"last_updated_at": datetime.now().isoformat()})
     return
 
 def get_report(stream, config, schema):
+    access_token = get_token(config)
     if (stream == "STATS_BY_DEVICE_AND_NETWORK_REPORT" or stream == "STATS_BY_DEVICE_HOURLY_REPORT" or stream == "STATS_WITH_SEARCH_IMPRESSIONS_REPORT" or
             stream == "STATS_IMPRESSIONS_REPORT" or stream == "VIDEO_CAMPAIGN_PERFORMANCE_REPORT"):
         stream = "CAMPAIGN_PERFORMANCE_REPORT"
 
     fields = list(schema["properties"].keys())[1:]
     props = [(k, v) for k, v in schema["properties"].items()][1:]
-    url = "https://adwords.google.com/api/adwords/reportdownload/v201809"
 
     predicate = ""
     if stream == "PLACEHOLDER_FEED_ITEM_REPORT":
         predicate = "WHERE PlaceholderType IN [2, 17, 7, 24, 1, 35, 31] AND Impressions != 0"
 
     payload={
-        '__rdquery': f'SELECT {", ".join(fields)} FROM {stream} {predicate} DURING LAST_30_DAYS',
+        '__rdquery': f'SELECT {", ".join(fields)} FROM {stream} {predicate} DURING YESTERDAY',
         '__fmt': 'CSV'}
-    files=[
 
-    ]
+    customers = get_customers(access_token, config)
+    if len(customers) > 1:
+        customers = list(filter(lambda x: x != config["customerId"], customers))
+
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        executor.map(lambda cust_idx: process_customer(cust_idx, customers, config, payload, props, access_token, stream), range(len(customers)))
+
+def process_customer(cust_idx, customers, config, payload, props, access_token, stream):
+    customer = customers[cust_idx]
     headers = {
         'developerToken': config["developerToken"],
-        'Authorization': f'Bearer {get_token(config)}',
-        'clientCustomerId': config["customerId"],
+        'Authorization': f'Bearer {access_token}',
+        'clientCustomerId': customer,
         'skipReportHeader': "true",
         'skipReportSummary': "true",
         'skipColumnHeader': "true"
     }
+    url = "https://adwords.google.com/api/adwords/reportdownload/v201809"
 
-    resp = requests.post(url, headers=headers, data=payload, files=files)
+    resp = requests.post(url, headers=headers, data=payload, files=[])
     lines = resp.text.splitlines(False)
-    result = []
     for line in lines:
         items = line.split(',')
         obj = {
-            "AdvertiserId": int(config["customerId"])
+            "AdvertiserId": int(customer)
         }
         for index in range(len(items)):
             value = items[index]
             if props[index][1]["type"] == "number":
                 value = float(value) if "." in value else int(value)
             obj[props[index][0]] = value
-        result.append(obj)
-
-    return result
+        singer.write_record(stream, obj)
+    LOGGER.info(f'[{stream}] Customer {cust_idx + 1}/{len(customers) - 1} processed')
 
 def get_token(config):
     token_url = "https://www.googleapis.com/oauth2/v4/token"
     payload = f'grant_type=refresh_token&refresh_token={config["refreshToken"]}'
     token_headers = {
-    'Authorization': f'Basic {config["auth"]}',
-    'Content-Type': 'application/x-www-form-urlencoded'
+        'Authorization': f'Basic {config["auth"]}',
+        'Content-Type': 'application/x-www-form-urlencoded'
     }
 
     response = requests.request("POST", token_url, headers=token_headers, data=payload)
     return response.json()["access_token"]
 
+def get_customers(access_token, config):
+    headers = {
+        'developer-token': config["developerToken"],
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+    body = {
+        "query": "SELECT customer_client.id FROM customer_client"
+    }
+    url = f'https://googleads.googleapis.com/v4/customers/{int(config["customerId"])}/googleAds:searchStream'
+    resp = requests.post(url, headers=headers, data=json.dumps(body)).json()
+    return list(map(lambda x: x["customerClient"]["id"], resp[0]["results"]))
 
 @utils.handle_top_exception(LOGGER)
 def main():
