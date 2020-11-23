@@ -12,7 +12,7 @@
         },
         "Date": {
             "type": "string",
-            "format": "date-time"
+            "format": "date"
         },
         "CampaignId": {
             "type": "number"

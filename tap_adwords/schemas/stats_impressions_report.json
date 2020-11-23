@@ -18,7 +18,7 @@
         },
         "Date": {
             "type": "string",
-            "format": "date-time"
+            "format": "date"
         },
         "Clicks": {
             "type": "number"

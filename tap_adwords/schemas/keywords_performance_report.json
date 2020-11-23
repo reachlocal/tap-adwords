@@ -48,7 +48,7 @@
         },
         "Date": {
             "type": "string",
-            "format": "date-time"
+            "format": "date"
         },
         "FirstPageCpc": {
             "type": "number"

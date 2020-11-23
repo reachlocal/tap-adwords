@@ -42,7 +42,7 @@
         },
         "Date": {
             "type": "string",
-            "format": "date-time"
+            "format": "date"
         },
         "Id": {
             "type": "number"
