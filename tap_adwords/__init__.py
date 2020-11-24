@@ -75,9 +75,10 @@ def sync(config, state, catalog):
 
 def get_report(stream, config, schema):
     access_token = get_token(config)
+    reporting_table = stream
     if (stream == "STATS_BY_DEVICE_AND_NETWORK_REPORT" or stream == "STATS_BY_DEVICE_HOURLY_REPORT" or stream == "STATS_WITH_SEARCH_IMPRESSIONS_REPORT" or
             stream == "STATS_IMPRESSIONS_REPORT" or stream == "VIDEO_CAMPAIGN_PERFORMANCE_REPORT"):
-        stream = "CAMPAIGN_PERFORMANCE_REPORT"
+        reporting_table = "CAMPAIGN_PERFORMANCE_REPORT"
 
     fields = list(schema["properties"].keys())[1:]
     props = [(k, v) for k, v in schema["properties"].items()][1:]
@@ -87,10 +88,9 @@ def get_report(stream, config, schema):
         predicate = "WHERE PlaceholderType IN [2, 17, 7, 24, 1, 35, 31] AND Impressions != 0"
 
     payload={
-        '__rdquery': f'SELECT {", ".join(fields)} FROM {stream} {predicate} DURING {config["dateRange"]}',
+        '__rdquery': f'SELECT {", ".join(fields)} FROM {reporting_table} {predicate} DURING {config["dateRange"]}',
         '__fmt': 'CSV'
     }
-    LOGGER.info(payload)
 
     customers = get_customers(access_token, config)
     if len(customers) > 1:
