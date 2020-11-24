@@ -5,10 +5,10 @@
     "additionalProperties": false,
     "properties": {
         "AdvertiserId": {
-            "type": "number"
+            "type": "integer"
         },
         "AdGroupId": {
-            "type": "number"
+            "type": "integer"
         },
         "AdGroupName": {
             "type": "string"
@@ -20,7 +20,7 @@
             "type": "string"
         },
         "CampaignId": {
-            "type": "number"
+            "type": "integer"
         },
         "CampaignName": {
             "type": "string"
@@ -29,7 +29,7 @@
             "type": "string"
         },
         "Clicks": {
-            "type": "number"
+            "type": "integer"
         },
         "Cost": {
             "type": "number"
@@ -54,10 +54,10 @@
             "type": "number"
         },
         "Id": {
-            "type": "number"
+            "type": "integer"
         },
         "Impressions": {
-            "type": "number"
+            "type": "integer"
         },
         "IsNegative": {
             "type": "string"

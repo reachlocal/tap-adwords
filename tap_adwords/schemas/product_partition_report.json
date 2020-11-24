@@ -5,23 +5,23 @@
     "additionalProperties": false,
     "properties": {
         "AdvertiserId": {
-            "type": "number"
+            "type": "integer"
         },
         "Date": {
             "type": "string",
             "format": "date"
         },
         "CampaignId": {
-            "type": "number"
+            "type": "integer"
         },
         "CpcBid": {
             "type": "string"
         },
         "Impressions": {
-            "type": "number"
+            "type": "integer"
         },
         "Clicks": {
-            "type": "number"
+            "type": "integer"
         },
         "Cost": {
             "type": "number"

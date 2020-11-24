@@ -86,7 +86,7 @@ def get_report(stream, config, schema):
         predicate = "WHERE PlaceholderType IN [2, 17, 7, 24, 1, 35, 31] AND Impressions != 0"
 
     payload={
-        '__rdquery': f'SELECT {", ".join(fields)} FROM {stream} {predicate} DURING YESTERDAY',
+        '__rdquery': f'SELECT {", ".join(fields)} FROM {stream} {predicate} DURING {config["dateRange"]}',
         '__fmt': 'CSV'}
 
     customers = get_customers(access_token, config)
@@ -117,7 +117,7 @@ def process_customer(cust_idx, customers, config, payload, props, access_token, 
         }
         for index in range(len(items)):
             value = items[index]
-            if props[index][1]["type"] == "number":
+            if props[index][1]["type"] == "number" or props[index][1]["type"] == "integer":
                 value = float(value) if "." in value else int(value)
             obj[props[index][0]] = value
         singer.write_record(stream, obj)
@@ -138,14 +138,20 @@ def get_customers(access_token, config):
     headers = {
         'developer-token': config["developerToken"],
         'Authorization': f'Bearer {access_token}',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'login-customer-id': config["rootCustomerId"]
     }
     body = {
         "query": "SELECT customer_client.id FROM customer_client"
     }
     url = f'https://googleads.googleapis.com/v4/customers/{int(config["customerId"])}/googleAds:searchStream'
     resp = requests.post(url, headers=headers, data=json.dumps(body)).json()
-    return list(map(lambda x: x["customerClient"]["id"], resp[0]["results"]))
+    results = list(map(lambda x: x["results"], resp))
+
+    data = []
+    for res in results:
+        data.extend(res)
+    return list(map(lambda x: x["customerClient"]["id"], data))
 
 @utils.handle_top_exception(LOGGER)
 def main():

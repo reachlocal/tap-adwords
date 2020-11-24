@@ -5,26 +5,26 @@
     "additionalProperties": false,
     "properties": {
         "AdvertiserId": {
-            "type": "number"
+            "type": "integer"
         },
         "OfferId": {
-            "type": "number"
+            "type": "integer"
         },
         "Date": {
             "type": "string",
             "format": "date"
         },
         "CampaignId": {
-            "type": "number"
+            "type": "integer"
         },
         "MerchantId": {
-            "type": "number"
+            "type": "integer"
         },
         "Impressions": {
-            "type": "number"
+            "type": "integer"
         },
         "Clicks": {
-            "type": "number"
+            "type": "integer"
         },
         "Cost": {
             "type": "number"

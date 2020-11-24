@@ -5,10 +5,10 @@
     "additionalProperties": false,
     "properties": {
         "AdvertiserId": {
-            "type": "number"
+            "type": "integer"
         },
         "CampaignId": {
-            "type": "number"
+            "type": "integer"
         },
         "CampaignName": {
             "type": "string"
@@ -21,10 +21,10 @@
             "format": "date"
         },
         "AdGroupId": {
-            "type": "number"
+            "type": "integer"
         },
         "VideoChannelId": {
-            "type": "number"
+            "type": "integer"
         },
         "VideoId": {
             "type": "number"
@@ -36,16 +36,16 @@
             "type": "string"
         },
         "VideoViews": {
-            "type": "number"
+            "type": "integer"
         },
         "Clicks": {
-            "type": "number"
+            "type": "integer"
         },
         "Cost": {
             "type": "number"
         },
         "Impressions": {
-            "type": "number"
+            "type": "integer"
         },
         "VideoQuartile25Rate": {
             "type": "string"

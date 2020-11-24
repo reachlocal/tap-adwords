@@ -5,10 +5,10 @@
     "additionalProperties": false,
     "properties": {
         "AdvertiserId": {
-            "type": "number"
+            "type": "integer"
         },
         "CampaignId": {
-            "type": "number"
+            "type": "integer"
         },
         "CampaignName": {
             "type": "string"
@@ -27,13 +27,13 @@
             "type": "string"
         },
         "Clicks": {
-            "type": "number"
+            "type": "integer"
         },
         "Cost": {
             "type": "number"
         },
         "Impressions": {
-            "type": "number"
+            "type": "integer"
         },
         "AveragePosition": {
             "type": "string"

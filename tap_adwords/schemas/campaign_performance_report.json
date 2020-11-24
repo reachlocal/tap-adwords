@@ -5,7 +5,7 @@
     "additionalProperties": false,
     "properties": {
         "AdvertiserId": {
-            "type": "number"
+            "type": "integer"
         },
         "AverageCpc": {
             "type": "number"
@@ -14,7 +14,7 @@
             "type": "string"
         },
         "CampaignId": {
-            "type": "number"
+            "type": "integer"
         },
         "CampaignName": {
             "type": "string"
@@ -23,7 +23,7 @@
             "type": "string"
         },
         "Clicks": {
-            "type": "number"
+            "type": "integer"
         },
         "VideoViews": {
             "type": "number"
@@ -39,7 +39,7 @@
             "format": "date"
         },
         "Impressions": {
-            "type": "number"
+            "type": "integer"
         },
         "AbsoluteTopImpressionPercentage": {
             "type": "number"
