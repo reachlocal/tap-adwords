@@ -61,7 +61,7 @@ def sync(config, state, catalog):
     for stream in catalog.get_selected_streams(state):
         LOGGER.info("Syncing stream:" + stream.tap_stream_id)
 
-        schema = utils.load_json(get_abs_path("schemas/{}.json".format(stream.tap_stream_id)))
+        schema = utils.load_json(get_abs_path("schemas/{}.json".format(stream.tap_stream_id.lower())))
         singer.write_schema(
             stream_name=stream.tap_stream_id,
             schema=schema,
