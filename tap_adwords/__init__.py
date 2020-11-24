@@ -62,7 +62,6 @@ def sync(config, state, catalog):
         LOGGER.info("Syncing stream:" + stream.tap_stream_id)
 
         full_path = "schemas/{}.json".format(stream.tap_stream_id.lower())
-        LOGGER.info(full_path)
         schema = utils.load_json(get_abs_path(full_path))
         singer.write_schema(
             stream_name=stream.tap_stream_id,
@@ -89,7 +88,9 @@ def get_report(stream, config, schema):
 
     payload={
         '__rdquery': f'SELECT {", ".join(fields)} FROM {stream} {predicate} DURING {config["dateRange"]}',
-        '__fmt': 'CSV'}
+        '__fmt': 'CSV'
+    }
+    LOGGER.info(payload)
 
     customers = get_customers(access_token, config)
     if len(customers) > 1:
