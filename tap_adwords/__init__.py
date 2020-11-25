@@ -123,7 +123,7 @@ def process_customer(cust_idx, customers, config, payload, props, access_token, 
             if props[index][1]["type"] == "number" or props[index][1]["type"] == "integer":
                 value = float(value) if "." in value else int(value)
             obj[props[index][0]] = value
-        singer.write_record(stream, obj)
+        singer.write_record(stream, json.loads(json.dumps(obj)))
     LOGGER.info(f'[{stream}] Customer {cust_idx + 1}/{len(customers) - 1} processed')
 
 def get_token(config):
