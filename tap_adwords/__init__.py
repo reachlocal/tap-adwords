@@ -8,15 +8,23 @@ from singer.schema import Schema
 import requests
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
+import threading
 
 
 REQUIRED_CONFIG_KEYS = []
 LOGGER = singer.get_logger()
-
+access_token = ''
 
 def get_abs_path(path):
     return os.path.join(os.path.dirname(os.path.realpath(__file__)), path)
 
+def set_interval(func, sec):
+    def func_wrapper():
+        set_interval(func, sec)
+        func()
+    timer = threading.Timer(sec, func_wrapper)
+    timer.start()
+    return timer
 
 def load_schemas():
     """ Load schemas from schemas folder """
@@ -33,7 +41,6 @@ def discover():
     raw_schemas = load_schemas()
     streams = []
     for stream_id, schema in raw_schemas.items():
-        # TODO: populate any metadata and stream's key properties here..
         stream_metadata = []
         key_properties = []
         streams.append(
@@ -69,19 +76,21 @@ def sync(config, state, catalog):
             key_properties=stream.key_properties,
         )
 
+        get_token(config)
+        interval = set_interval(lambda: get_token(config), 3500)
         get_report(stream.tap_stream_id, config, schema)
-        singer.write_state({"last_updated_at": datetime.now().isoformat()})
+        interval.cancel()
+        singer.write_state({"last_updated_at": datetime.now().isoformat(), "stream": stream.tap_stream_id})
     return
 
 def get_report(stream, config, schema):
-    access_token = get_token(config)
     reporting_table = stream
     if (stream == "STATS_BY_DEVICE_AND_NETWORK_REPORT" or stream == "STATS_BY_DEVICE_HOURLY_REPORT" or stream == "STATS_WITH_SEARCH_IMPRESSIONS_REPORT" or
             stream == "STATS_IMPRESSIONS_REPORT" or stream == "VIDEO_CAMPAIGN_PERFORMANCE_REPORT"):
         reporting_table = "CAMPAIGN_PERFORMANCE_REPORT"
 
-    fields = list(schema["properties"].keys())[1:]
-    props = [(k, v) for k, v in schema["properties"].items()][1:]
+    fields = list(schema["properties"].keys())[2:]
+    props = [(k, v) for k, v in schema["properties"].items()][2:]
 
     predicate = ""
     if stream == "PLACEHOLDER_FEED_ITEM_REPORT":
@@ -92,19 +101,19 @@ def get_report(stream, config, schema):
         '__fmt': 'CSV'
     }
 
-    customers = get_customers(access_token, config)
+    customers = get_customers(config)
     if len(customers) > 1:
-        customers = list(filter(lambda x: x != config["customerId"], customers))
+        customers = list(filter(lambda x: x["masterId"] != x["customerId"], customers))
 
     with ThreadPoolExecutor(max_workers=10) as executor:
-        executor.map(lambda cust_idx: process_customer(cust_idx, customers, config, payload, props, access_token, stream), range(len(customers)))
+        executor.map(lambda arg: process_customer(arg[0], arg[1], len(customers), config, payload, props, stream), enumerate(customers[:50]))
 
-def process_customer(cust_idx, customers, config, payload, props, access_token, stream):
-    customer = customers[cust_idx]
+def process_customer(cust_idx, customer, total, config, payload, props, stream):
+    global access_token
     headers = {
         'developerToken': config["developerToken"],
         'Authorization': f'Bearer {access_token}',
-        'clientCustomerId': customer,
+        'clientCustomerId': str(customer["customerId"]),
         'skipReportHeader': "true",
         'skipReportSummary': "true",
         'skipColumnHeader': "true"
@@ -112,22 +121,22 @@ def process_customer(cust_idx, customers, config, payload, props, access_token, 
     url = "https://adwords.google.com/api/adwords/reportdownload/v201809"
 
     resp = requests.post(url, headers=headers, data=payload, files=[])
+    if resp.status_code != 200:
+        print(f'Request failed for customer: {customer["customerId"]}')
     lines = resp.text.splitlines(False)
-    data = []
     for line in lines:
         items = line.split(',')
         obj = {
-            "AdvertiserId": int(customer)
+            "MasterAdvertiserId": int(customer["masterId"]),
+            "AdvertiserId": int(customer["customerId"])
         }
         for index in range(len(items)):
             value = items[index]
             if props[index][1]["type"] == "number" or props[index][1]["type"] == "integer":
                 value = float(value) if "." in value else int(value)
             obj[props[index][0]] = str(value)
-
-        data.append(obj)
-    singer.write_records(stream, data)
-    LOGGER.info(f'[{stream}] Customer {cust_idx + 1}/{len(customers) - 1} processed')
+        singer.write_record(stream, obj)
+    LOGGER.info(f'[{stream}] Customer {cust_idx + 1}/{total - 1} processed')
 
 def get_token(config):
     token_url = "https://www.googleapis.com/oauth2/v4/token"
@@ -138,9 +147,12 @@ def get_token(config):
     }
 
     response = requests.request("POST", token_url, headers=token_headers, data=payload)
-    return response.json()["access_token"]
+    LOGGER.info('Token refreshed')
+    global access_token
+    access_token = response.json()["access_token"]
 
-def get_customers(access_token, config):
+def get_customers(config):
+    global access_token
     headers = {
         'developer-token': config["developerToken"],
         'Authorization': f'Bearer {access_token}',
@@ -150,14 +162,15 @@ def get_customers(access_token, config):
     body = {
         "query": "SELECT customer_client.id FROM customer_client"
     }
-    url = f'https://googleads.googleapis.com/v4/customers/{int(config["customerId"])}/googleAds:searchStream'
-    resp = requests.post(url, headers=headers, data=json.dumps(body)).json()
-    results = list(map(lambda x: x["results"], resp))
 
-    data = []
-    for res in results:
-        data.extend(res)
-    return list(map(lambda x: x["customerClient"]["id"], data))
+    root_mccs = config["customerId"].split(',')
+    results = []
+    for root_mcc in root_mccs:
+        url = f'https://googleads.googleapis.com/v4/customers/{int(root_mcc)}/googleAds:searchStream'
+        resp = requests.post(url, headers=headers, data=json.dumps(body)).json()
+        for entry in resp:
+            results.extend(list(map(lambda x: { "masterId": root_mcc, "customerId": x["customerClient"]["id"] }, entry["results"])))
+    return results
 
 @utils.handle_top_exception(LOGGER)
 def main():

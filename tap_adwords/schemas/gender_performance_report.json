@@ -4,6 +4,9 @@
     ],
     "additionalProperties": false,
     "properties": {
+        "MasterAdvertiserId": {
+            "type": "integer"
+        },
         "AdvertiserId": {
             "type": "integer"
         },
