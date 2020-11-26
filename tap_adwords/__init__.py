@@ -106,7 +106,7 @@ def get_report(stream, config, schema):
         customers = list(filter(lambda x: x["masterId"] != x["customerId"], customers))
 
     with ThreadPoolExecutor(max_workers=10) as executor:
-        executor.map(lambda arg: process_customer(arg[0], arg[1], len(customers), config, payload, props, stream), enumerate(customers[:50]))
+        executor.map(lambda arg: process_customer(arg[0], arg[1], len(customers), config, payload, props, stream), enumerate(customers))
 
 def process_customer(cust_idx, customer, total, config, payload, props, stream):
     global access_token
