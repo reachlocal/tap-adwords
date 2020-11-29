@@ -123,6 +123,7 @@ def process_customer(cust_idx, customer, total, config, payload, props, stream):
     resp = requests.post(url, headers=headers, data=payload, files=[])
     if resp.status_code != 200:
         LOGGER.info(f'Request failed for customer: {customer["customerId"]}')
+        return
     lines = resp.text.splitlines(False)
     for line in lines:
         items = line.split(',')
