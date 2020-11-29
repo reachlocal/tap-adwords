@@ -27,10 +27,10 @@
             "type": "integer"
         },
         "VideoChannelId": {
-            "type": "integer"
+            "type": "string"
         },
         "VideoId": {
-            "type": "number"
+            "type": "string"
         },
         "VideoTitle": {
             "type": "string"
