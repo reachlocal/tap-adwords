@@ -9,6 +9,8 @@ import requests
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 import threading
+import csv
+from contextlib import closing
 
 
 REQUIRED_CONFIG_KEYS = []
@@ -120,23 +122,27 @@ def process_customer(cust_idx, customer, total, config, payload, props, stream):
     }
     url = "https://adwords.google.com/api/adwords/reportdownload/v201809"
 
-    resp = requests.post(url, headers=headers, data=payload, files=[])
-    if resp.status_code != 200:
-        LOGGER.info(f'Request failed for customer: {customer["customerId"]}')
-        return
-    lines = resp.text.splitlines(False)
-    for line in lines:
-        items = line.split(',')
-        obj = {
-            "MasterAdvertiserId": int(customer["masterId"]),
-            "AdvertiserId": int(customer["customerId"])
-        }
-        for index in range(len(items)):
-            value = items[index]
-            if props[index][1]["type"] == "number" or props[index][1]["type"] == "integer":
-                value = float(value) if "." in value else int(value)
-            obj[props[index][0]] = str(value)
-        singer.write_record(stream, obj)
+    with closing(requests.post(url, headers=headers, data=payload, files=[], stream=True)) as resp:
+        if resp.status_code != 200:
+            LOGGER.info(f'Request failed for customer: {customer["customerId"]}')
+            return
+        f = (line.decode('utf-8') for line in resp.iter_lines())
+        reader = csv.reader(f, delimiter=',', quotechar='"')
+        for row_number, items in enumerate(reader):
+            try:
+                obj = {
+                    "MasterAdvertiserId": int(customer["masterId"]),
+                    "AdvertiserId": int(customer["customerId"])
+                }
+                for index in range(len(items)):
+                    value = items[index]
+                    if props[index][1]["type"] == "number" or props[index][1]["type"] == "integer":
+                        value = float(value) if "." in value else int(value)
+                    obj[props[index][0]] = str(value)
+                singer.write_record(stream, obj)
+            except Exception as ex:
+                LOGGER.info(ex)
+                LOGGER.info(items)
     LOGGER.info(f'[{stream}] Customer {cust_idx + 1}/{total - 1} processed')
 
 def get_token(config):
