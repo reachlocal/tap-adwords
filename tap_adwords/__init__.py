@@ -90,6 +90,8 @@ def get_report(stream, config, schema):
     if (stream == "STATS_BY_DEVICE_AND_NETWORK_REPORT" or stream == "STATS_BY_DEVICE_HOURLY_REPORT" or stream == "STATS_WITH_SEARCH_IMPRESSIONS_REPORT" or
             stream == "STATS_IMPRESSIONS_REPORT" or stream == "VIDEO_CAMPAIGN_PERFORMANCE_REPORT"):
         reporting_table = "CAMPAIGN_PERFORMANCE_REPORT"
+    elif stream == 'AD_PERFORMANCE_EXTENDED_REPORT':
+        reporting_table = 'AD_PERFORMANCE_REPORT'
 
     fields = list(schema["properties"].keys())[2:]
     props = [(k, v) for k, v in schema["properties"].items()][2:]

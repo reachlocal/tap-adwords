@@ -1,0 +1,84 @@
+{
+    "type": [
+        "object"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "MasterAdvertiserId": {
+            "type": "integer"
+        },
+        "AdvertiserId": {
+            "type": "integer"
+        },
+        "AdGroupId": {
+            "type": "integer"
+        },
+        "AdGroupName": {
+            "type": "string"
+        },
+        "AdType": {
+            "type": "string"
+        },
+        "AverageCpc": {
+            "type": "number"
+        },
+        "AveragePosition": {
+            "type": "string"
+        },
+        "CampaignId": {
+            "type": "integer"
+        },
+        "CampaignName": {
+            "type": "string"
+        },
+        "CampaignStatus": {
+            "type": "string"
+        },
+        "Clicks": {
+            "type": "integer"
+        },
+        "Cost": {
+            "type": "number"
+        },
+        "CriterionId": {
+            "type": "number"
+        },
+        "Ctr": {
+            "type": "string"
+        },
+        "Date": {
+            "type": "string",
+            "format": "date"
+        },
+        "Id": {
+            "type": "integer"
+        },
+        "Impressions": {
+            "type": "integer"
+        },
+        "IsNegative": {
+            "type": "string"
+        },
+        "Status": {
+            "type": "string"
+        },
+        "CreativeFinalUrls": {
+            "type": "string"
+        },
+        "CreativeDestinationUrl": {
+            "type": "string"
+        },
+        "CreativeTrackingUrlTemplate": {
+            "type": "string"
+        },
+        "CreativeUrlCustomParameters": {
+            "type": "string"
+        },
+        "AbsoluteTopImpressionPercentage": {
+            "type": "number"
+        },
+        "TopImpressionPercentage": {
+            "type": "number"
+        }
+    }
+}
