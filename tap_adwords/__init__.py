@@ -174,9 +174,10 @@ def get_customers(config):
 
     root_mccs = config["customerId"].split(',')
     results = []
+    root_mccs_count = len(root_mccs)
     for root_mcc in root_mccs:
         req_body = json.loads(json.dumps(body))
-        if root_mcc == config["rootCustomerId"]:
+        if root_mcc == config["rootCustomerId"] and root_mccs_count > 1:
             req_body['query'] = req_body['query'] + ' WHERE customer_client.level = 1'
         url = f'https://googleads.googleapis.com/v4/customers/{int(root_mcc)}/googleAds:searchStream'
         resp = requests.post(url, headers=headers, data=json.dumps(req_body)).json()
