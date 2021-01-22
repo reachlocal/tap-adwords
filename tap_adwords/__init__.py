@@ -126,7 +126,9 @@ def process_customer(cust_idx, customer, total, config, payload, props, stream):
 
     with closing(requests.post(url, headers=headers, data=payload, files=[], stream=True)) as resp:
         if resp.status_code != 200:
-            LOGGER.error(f'Request failed for customer: {customer["customerId"]}')
+            LOGGER.error(f'Account {customer["customerId"]} is a manager'
+                if 'CUSTOMER_SERVING_TYPE_REPORT_MISMATCH' in str(resp.content) 
+                else f'Request failed for customer: {customer["customerId"]}')
             return
         f = (line.decode('utf-8') for line in resp.iter_lines())
         reader = csv.reader(f, delimiter=',', quotechar='"')
