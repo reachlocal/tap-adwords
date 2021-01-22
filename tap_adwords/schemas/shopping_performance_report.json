@@ -11,7 +11,7 @@
             "type": "integer"
         },
         "OfferId": {
-            "type": "integer"
+            "type": "string"
         },
         "Date": {
             "type": "string",

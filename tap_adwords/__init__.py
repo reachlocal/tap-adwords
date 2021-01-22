@@ -126,7 +126,7 @@ def process_customer(cust_idx, customer, total, config, payload, props, stream):
 
     with closing(requests.post(url, headers=headers, data=payload, files=[], stream=True)) as resp:
         if resp.status_code != 200:
-            LOGGER.info(f'Request failed for customer: {customer["customerId"]}')
+            LOGGER.error(f'Request failed for customer: {customer["customerId"]}')
             return
         f = (line.decode('utf-8') for line in resp.iter_lines())
         reader = csv.reader(f, delimiter=',', quotechar='"')
@@ -143,8 +143,8 @@ def process_customer(cust_idx, customer, total, config, payload, props, stream):
                     obj[props[index][0]] = str(value)
                 singer.write_record(stream, obj)
             except Exception as ex:
-                LOGGER.info(ex)
-                LOGGER.info(items)
+                LOGGER.error(ex)
+                LOGGER.error(items)
     LOGGER.info(f'[{stream}] Customer {cust_idx + 1}/{total - 1} processed')
 
 def get_token(config):
