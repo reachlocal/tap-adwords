@@ -16,6 +16,7 @@ from contextlib import closing
 REQUIRED_CONFIG_KEYS = []
 LOGGER = singer.get_logger()
 access_token = ''
+interval = None
 
 def get_abs_path(path):
     return os.path.join(os.path.dirname(os.path.realpath(__file__)), path)
@@ -79,6 +80,7 @@ def sync(config, state, catalog):
         )
 
         get_token(config)
+        global interval
         interval = set_interval(lambda: get_token(config), 3500)
         get_report(stream.tap_stream_id, config, schema)
         interval.cancel()
@@ -126,9 +128,10 @@ def process_customer(cust_idx, customer, total, config, payload, props, stream):
 
     with closing(requests.post(url, headers=headers, data=payload, files=[], stream=True)) as resp:
         if resp.status_code != 200:
-            LOGGER.error(f'Account {customer["customerId"]} is a manager'
-                if 'CUSTOMER_SERVING_TYPE_REPORT_MISMATCH' in str(resp.content) 
-                else f'Request failed for customer: {customer["customerId"]}')
+            if 'CUSTOMER_SERVING_TYPE_REPORT_MISMATCH' in str(resp.content):
+                LOGGER.info(f'Account {customer["customerId"]} is a manager')
+            else:
+                LOGGER.error(f'Request failed for customer: {customer["customerId"]}')
             return
         f = (line.decode('utf-8') for line in resp.iter_lines())
         reader = csv.reader(f, delimiter=',', quotechar='"')
@@ -147,7 +150,11 @@ def process_customer(cust_idx, customer, total, config, payload, props, stream):
             except Exception as ex:
                 LOGGER.error(ex)
                 LOGGER.error(items)
+                LOGGER.error(f'Customer: {customer}')
     LOGGER.info(f'[{stream}] Customer {cust_idx + 1}/{total - 1} processed')
+    if (cust_idx + 1) == (total - 1):
+        global interval
+        interval.cancel()
 
 def get_token(config):
     token_url = "https://www.googleapis.com/oauth2/v4/token"
@@ -185,7 +192,7 @@ def get_customers(config):
         resp = requests.post(url, headers=headers, data=json.dumps(req_body)).json()
         for entry in resp:
             results.extend(list(map(lambda x: { "masterId": root_mcc, "customerId": x["customerClient"]["id"] }, entry["results"])))
-    return results
+    return results[5000:]
 
 @utils.handle_top_exception(LOGGER)
 def main():
