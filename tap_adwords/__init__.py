@@ -131,7 +131,7 @@ def process_customer(cust_idx, customer, total, config, payload, props, stream):
             if 'CUSTOMER_SERVING_TYPE_REPORT_MISMATCH' in str(resp.content):
                 LOGGER.info(f'Account {customer["customerId"]} is a manager')
             else:
-                LOGGER.error(f'[{stream}] Request failed for customer: {customer["customerId"]}')
+                LOGGER.error(f'[{stream}] Request failed for customer {customer["customerId"]}: {resp.content}')
             return
         f = (line.decode('utf-8') for line in resp.iter_lines())
         reader = csv.reader(f, delimiter=',', quotechar='"')
