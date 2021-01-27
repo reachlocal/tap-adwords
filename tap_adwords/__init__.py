@@ -114,7 +114,7 @@ def get_report(stream, config, schema):
     with ThreadPoolExecutor(max_workers=15) as executor:
         executor.map(lambda arg: process_customer(arg[0], arg[1], len(customers), config, payload, props, stream), enumerate(customers))
 
-def process_customer(cust_idx, customer, total, config, payload, props, stream):
+def process_customer(cust_idx, customer, total, config, payload, props, stream, retried = False):
     global access_token
     headers = {
         'developerToken': config["developerToken"],
@@ -130,6 +130,8 @@ def process_customer(cust_idx, customer, total, config, payload, props, stream):
         if resp.status_code != 200:
             if 'CUSTOMER_SERVING_TYPE_REPORT_MISMATCH' in str(resp.content):
                 LOGGER.info(f'Account {customer["customerId"]} is a manager')
+            elif not retried:
+                process_customer(cust_idx, customer, total, config, payload, props, stream, retried=True)
             else:
                 LOGGER.error(f'[{stream}] Request failed for customer {customer["customerId"]}: {resp.content}')
             return
