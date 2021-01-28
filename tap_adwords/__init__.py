@@ -192,7 +192,7 @@ def get_customers(config):
         resp = requests.post(url, headers=headers, data=json.dumps(req_body)).json()
         for entry in resp:
             results.extend(list(map(lambda x: { "masterId": root_mcc, "customerId": x["customerClient"]["id"] }, entry["results"])))
-    return results[5000:]
+    return results
 
 @utils.handle_top_exception(LOGGER)
 def main():
