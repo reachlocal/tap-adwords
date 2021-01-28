@@ -111,7 +111,7 @@ def get_report(stream, config, schema):
     if len(customers) > 1:
         customers = list(filter(lambda x: x["masterId"] != x["customerId"], customers))
 
-    with ThreadPoolExecutor(max_workers=15) as executor:
+    with ThreadPoolExecutor(max_workers=10) as executor:
         executor.map(lambda arg: process_customer(arg[0], arg[1], len(customers), config, payload, props, stream), enumerate(customers))
 
 def process_customer(cust_idx, customer, total, config, payload, props, stream, retried = False):
