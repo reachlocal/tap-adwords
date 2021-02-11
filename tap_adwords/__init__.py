@@ -131,6 +131,8 @@ def process_customer(cust_idx, customer, total, config, payload, props, stream, 
         if resp.status_code != 200:
             if 'CUSTOMER_SERVING_TYPE_REPORT_MISMATCH' in str(resp.content):
                 LOGGER.info(f'Account {customer["customerId"]} is a manager')
+            elif 'CUSTOMER_NOT_ACTIVE' in str(resp.content):
+                LOGGER.info(f'Account {customer["customerId"]} is not active')
             elif not retried:
                 process_customer(cust_idx, customer, total, config, payload, props, stream, retried=True)
             else:
